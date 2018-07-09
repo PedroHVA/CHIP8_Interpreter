@@ -32,6 +32,7 @@ class CHIP8Interpreter {
         void reset();
         void step();
         void clearDisplay();
+        bool loadRom(const char *filename);
 
     private:
         // ======================================== Opcode Functions ========================================  

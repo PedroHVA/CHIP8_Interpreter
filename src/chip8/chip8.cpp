@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <time.h>
+#include <iostream>
 
 #include "chip8.hpp"
 
@@ -78,12 +79,22 @@ void CHIP8Interpreter::step() {
     // An opcode is 4 bytes long, therefore need to merge
     opcode = (memory[pc] << 8) | memory[pc+1];
     pc += 2;
+
+    std::cout << "Opcode: " << std::hex << std::uppercase << opcode << std::nouppercase << std::dec << std::endl;
     // Execute the opcode 
     ((this)->*opcodeTable[(opcode & 0xF000) >> 12])();
 
     // Temporary: Keeps program from crashing
     if(pc > CHIP8_MEMORY_MAX) {
         pc = 0;
+    }
+
+    // Update timers 
+    if(timer_delay > 0) {
+        timer_delay--;
+    }
+    if(timer_sound > 0) {
+        timer_sound--;
     }
 }
 
@@ -405,4 +416,44 @@ void CHIP8Interpreter::opcodeF() {
         default:
             break;
     }
+}
+
+bool CHIP8Interpreter::loadRom(const char *filename) {
+    reset();
+
+    // Open the file
+    FILE *file = fopen(filename, "rb");
+    if(file == NULL) {
+        return false;
+    }
+    
+    // Get file size
+    fseek(file, 0, SEEK_END);
+    unsigned long file_size = ftell(file);
+    rewind(file);
+
+    // Create a buffer to hold the file contents
+    char *buffer = (char*)malloc(sizeof(char) * file_size);
+    if(buffer == NULL) {
+        return false;
+    }
+
+    // Copy the file into the buffer
+    size_t result = fread(buffer, 1, file_size, file);
+    if(result != file_size) {
+        return false;
+    }
+
+    // Copy buffer to the CHIP-8 memory
+    if((CHIP8_MEMORY_MAX - 0x200) > file_size) {
+        for(unsigned int i = 0; i < file_size; i++) {
+            memory[i + 0x200] = buffer[i];
+        }
+    }
+
+    // Close the file, free buffer
+    fclose(file);
+    free(buffer);
+
+    return true;
 }
