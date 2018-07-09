@@ -1,8 +1,6 @@
 #ifndef CHIP8_H
 #define CHIP8_H
 
-#include <stdint.h>
-
 #define CHIP8_MEMORY_MAX    4096
 #define CHIP8_SCREEN_WIDTH  64
 #define CHIP8_SCREEN_HEIGHT 32
