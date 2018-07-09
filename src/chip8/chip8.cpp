@@ -316,6 +316,8 @@ void CHIP8Interpreter::opcodeD() {
             }
         }
     }
+
+    draw_flag = 1;
 }
 
 /**
@@ -418,6 +420,12 @@ void CHIP8Interpreter::opcodeF() {
     }
 }
 
+/**
+ * Load the contents of a CHIP-8 file into memory.
+ * 
+ * @param   filename    The name of the file to load
+ * @return              true if succesfully loaded the file
+ **/
 bool CHIP8Interpreter::loadRom(const char *filename) {
     reset();
 

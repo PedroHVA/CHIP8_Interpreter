@@ -28,6 +28,9 @@ class CHIP8Interpreter {
     uint8_t timer_sound;
 
     public:
+        // Will be set to 1 when the display changes
+        int draw_flag = 0;
+
         CHIP8Interpreter();
         void reset();
         void step();
