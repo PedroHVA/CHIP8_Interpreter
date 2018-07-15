@@ -63,8 +63,8 @@ void videoClose() {
  * @param	display		A 64x32 2D array containing information about the CHIP-8 display
  **/
 void videoDraw(uint8_t display[64][32]) {
-	//Clear screen
-	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+	// Clear screen
+	SDL_SetRenderDrawColor(renderer, 0x38, 0x39, 0x3A, 0x00);
 	SDL_RenderClear(renderer);
 
 	// Window dimensions
@@ -72,17 +72,37 @@ void videoDraw(uint8_t display[64][32]) {
 	int window_height = 0;
 	SDL_GetWindowSize(window, &window_width, &window_height);
 
+	// Calculate the size of each pixel
+	int size = (int)SDL_floor(window_width / 64);
+	int tmp = (int)SDL_floor(window_height / 32);
+	if(tmp < size) {
+		size = tmp;
+	}
+
+	// Padding to centre the game viewport
+	int x_padding = (int)SDL_floor((window_width - (64 * size)) / 2);
+	int y_padding = (int)SDL_floor((window_height - (32 * size)) / 2);
+
+	// Make game screen have black background
+	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+	SDL_Rect sprite = {x_padding, y_padding, size * 64, size * 32};
+	SDL_RenderFillRect(renderer, &sprite);
+
 	// Draw the game screen	
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	int size = (int)SDL_floor(window_height / 32);
+
 	for(int y=0; y<32; y++) {
 		for(int x=0; x<64; x++) { 
 			if(display[x][y]) {
-				SDL_Rect sprite = {x*size, y*size, size, size};
+				SDL_Rect sprite = {(x*size)+x_padding, (y*size)+y_padding, size, size};
 				SDL_RenderFillRect(renderer, &sprite);
 			}
 		}
 	}
+
+	// Add border to the game screen
+	SDL_Rect sprite2 = {x_padding, y_padding, size * 64, size * 32};
+	SDL_RenderDrawRect(renderer, &sprite2);
 
 	//Update screen
 	SDL_RenderPresent(renderer);
