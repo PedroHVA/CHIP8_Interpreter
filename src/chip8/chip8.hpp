@@ -16,20 +16,19 @@ class CHIP8Interpreter {
 
     uint8_t memory[CHIP8_MEMORY_MAX];   // CPU memory (Program rom and work ram: 0x200-0xFFF)
     uint8_t V[16];                      // Registers                                              
-    uint8_t display[CHIP8_SCREEN_WIDTH][CHIP8_SCREEN_HEIGHT];   // Screen buffer
 
     uint16_t stack[16]; // Stack where the program counter is stored - has 16 levels
     uint16_t sp;        // Stack pointer - the current level in the stack we're at
-
-    uint8_t key[16];    // The state of each key for the Chip-8 keypad
 
     // Timers that count down - To emulate accurately, they should count at 60 Hz
     uint8_t timer_delay;
     uint8_t timer_sound;
 
     public:
-        // Will be set to 1 when the display changes
-        int draw_flag = 0;
+        uint8_t display[CHIP8_SCREEN_WIDTH][CHIP8_SCREEN_HEIGHT];   // Screen buffer
+        int draw_flag = 0;  // Will be set to 1 when the display changes
+        int key[16];        // The state of each key for the Chip-8 keypad
+        int timer_flag = 0; // Will be set to 1 if the timers should tick down
 
         CHIP8Interpreter();
         void reset();

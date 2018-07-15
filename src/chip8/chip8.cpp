@@ -37,7 +37,6 @@ static uint8_t fontset[80] =
  **/
 CHIP8Interpreter::CHIP8Interpreter() {
     reset();
-    srand(time(NULL));
 }
 
 /**
@@ -50,6 +49,7 @@ void CHIP8Interpreter::reset() {
     timer_sound = 0;
     sp = 0;
     pc = 0x200;
+    srand(time(NULL));
 
     // Clear memory
     for(int i=0; i<CHIP8_MEMORY_MAX; i++) {
@@ -80,7 +80,7 @@ void CHIP8Interpreter::step() {
     opcode = (memory[pc] << 8) | memory[pc+1];
     pc += 2;
 
-    std::cout << "Opcode: " << std::hex << std::uppercase << opcode << std::nouppercase << std::dec << std::endl;
+    // std::cout << "Opcode: " << std::hex << std::uppercase << opcode << std::nouppercase << std::dec << std::endl;
     // Execute the opcode 
     ((this)->*opcodeTable[(opcode & 0xF000) >> 12])();
 
@@ -90,11 +90,13 @@ void CHIP8Interpreter::step() {
     }
 
     // Update timers 
-    if(timer_delay > 0) {
-        timer_delay--;
-    }
-    if(timer_sound > 0) {
-        timer_sound--;
+    if(timer_flag) {
+        if(timer_delay > 0) {
+            timer_delay--;
+        }
+        if(timer_sound > 0) {
+            timer_sound--;
+        }
     }
 }
 
