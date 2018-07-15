@@ -88,15 +88,17 @@ void CHIP8Interpreter::step() {
     if(pc > CHIP8_MEMORY_MAX) {
         pc = 0;
     }
+}
 
-    // Update timers 
-    if(timer_flag) {
-        if(timer_delay > 0) {
-            timer_delay--;
-        }
-        if(timer_sound > 0) {
-            timer_sound--;
-        }
+/**
+ * Ticks down the timers.
+ **/
+void CHIP8Interpreter::timerUpdate() {
+    if(timer_delay > 0) {
+        timer_delay--;
+    }
+    if(timer_sound > 0) {
+        timer_sound--;
     }
 }
 

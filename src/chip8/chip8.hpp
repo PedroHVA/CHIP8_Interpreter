@@ -28,11 +28,11 @@ class CHIP8Interpreter {
         uint8_t display[CHIP8_SCREEN_WIDTH][CHIP8_SCREEN_HEIGHT];   // Screen buffer
         int draw_flag = 0;  // Will be set to 1 when the display changes
         int key[16];        // The state of each key for the Chip-8 keypad
-        int timer_flag = 0; // Will be set to 1 if the timers should tick down
 
         CHIP8Interpreter();
         void reset();
         void step();
+        void timerUpdate();
         void clearDisplay();
         bool loadRom(const char *filename);
 

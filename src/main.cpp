@@ -8,14 +8,21 @@ int main(int argc, char *argv[]) {
     bool exit = false;
 
     // TODO: Move these to a config file instead
-    // Rate at which the CHIP-8 cpu updates (in Hz)
-    //int chip8_speed = 500;
     // Rate that the screen refreshes
-    //int screen_fps = 60;
+    int screen_fps = 60;
+    int screen_ticks_per_frame = 1000 / screen_fps;
+    // Rate at which the CHIP-8 cpu updates (in Hz) - Has to be larger than screen fps
+    int chip8_cpu_freq = 500;
+    // How many ticks will the cpu update for every draw call
+    int chip8_ticks = chip8_cpu_freq / screen_fps;
+
+    // We'll use this to count the frames per second
+    int frames = 0;
+    double fps_timer = SDL_GetTicks();
 
     // Access CHIP-8 memory and cpu
     CHIP8Interpreter chip8;
-    chip8.loadRom("TETRIS");
+    chip8.loadRom("TEST");
 
     // Atempt to create a SDL window
     if(!videoInit(800, 600)) {
@@ -31,7 +38,10 @@ int main(int argc, char *argv[]) {
         exit = inputPoll(chip8.key);
 
         // Process one instruction loaded into the CHIP-8's memory
-        chip8.step();
+        for(int i = 0; i < chip8_ticks; i++) {
+            chip8.step();
+        }
+        chip8.timerUpdate();
 
         // Update the screen the CHIP-8 has updated its display
         if(chip8.draw_flag) {
@@ -39,10 +49,19 @@ int main(int argc, char *argv[]) {
             chip8.draw_flag = 0;
         }
 
-        int current_time = SDL_GetTicks() - start_time;
-        int sleep_time = (1000 / 60) - current_time;
-        if(sleep_time > 0) {
-            SDL_Delay(sleep_time);
+        // Calculate FPS
+        int fps_ticks = SDL_GetTicks() - fps_timer;
+        float fps_avg = frames / (fps_ticks / 1000.f);
+        if(fps_avg > 2000000) {
+            fps_avg = 0;
+        }
+        frames++;
+
+        int tick_time = SDL_GetTicks() - start_time;
+        // Cap screen refresh time
+        if(tick_time < screen_ticks_per_frame) {
+            // Wait remaining time 
+            SDL_Delay(screen_ticks_per_frame - tick_time);
         }
     }
 
